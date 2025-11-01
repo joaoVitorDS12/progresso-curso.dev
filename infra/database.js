@@ -21,10 +21,6 @@ async function query(queryObject) {
   } finally {
     client.release();
   }
-
-  // const result = await pool.query(queryObject);
-  // await pool.end();
-  // return result;
 }
 
 export default {
