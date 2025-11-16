@@ -1,15 +1,17 @@
+/* eslint-env node */
+
 const { spawn } = require("child_process");
 
 function run(command) {
   return new Promise((resolve, reject) => {
     const [cmd, ...args] = command.split(" ");
 
-    const proc = spawn(cmd, args, {
+    const childProcess = spawn(cmd, args, {
       stdio: "inherit",
       shell: true,
     });
 
-    proc.on("close", (code, signal) => {
+    childProcess.on("close", (code, signal) => {
       if (signal === "SIGINT" || signal === "SIGTERM") {
         return resolve("killed");
       }
