@@ -4,9 +4,8 @@
   "description": "Projeto para mostrar meu progresso com as aulas do curso.dev",
   "main": "index.js",
   "scripts": {
-    "dev": "node models/package_scripts/dev.js",
-    "test": "npm run services:up && concurrently -n next,jest --hide next -k -s command-jest \"next dev\" \"jest --runInBand --verbose\"",
-    "posttest": "npm run services:stop",
+    "dev": "node scripts/package_scripts/dev.js",
+    "test": "node scripts/package_scripts/testScript.js",
     "test:watch": "jest --watchAll --runInBand",
     "services:up": "docker compose -f infra/compose.yaml up -d",
     "services:stop": "docker compose -f infra/compose.yaml stop",
