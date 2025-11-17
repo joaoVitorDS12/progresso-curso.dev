@@ -4,5 +4,17 @@
     "plugin:jest/recommended",
     "next/core-web-vitals",
     "prettier"
+  ],
+  "overrides": [
+    {
+      "files": ["scripts/package_scripts/*.js"],
+      "env": {
+        "node": true,
+        "es2021": true
+      },
+      "globals": {
+        "Promise": "readonly"
+      }
+    }
   ]
 }
