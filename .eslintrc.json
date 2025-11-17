@@ -7,7 +7,9 @@
   ],
   "overrides": [
     {
-      "files": ["models/package_scripts/*.js"],
+      "files": [
+        "scripts/package_scripts/*.js"
+      ],
       "env": {
         "node": true,
         "es2021": true
