@@ -10,34 +10,46 @@ export default function StatusPage() {
   return (
     <>
       <h1>Status</h1>
-      <StatusPageInfos />
+      <UpdatedAt />
+      <h1>Banco de Dados</h1>
+      <DatabaseInfo />
     </>
   );
 }
 
-function StatusPageInfos() {
+function UpdatedAt() {
   // a KEY do fetchAPI é o primeiro paramêtro do useSWR
   const { data, isLoading } = useSWR("/api/v1/status", fetchAPI, {
     refreshInterval: 2000,
   });
 
-  let Loading = "Carregando...";
-  let UpdatedAtText = Loading;
-  let Dependencies = Loading;
+  let UpdatedAtText = "Carregando...";
 
   if (!isLoading && data) {
     UpdatedAtText = new Date(data.updated_at).toLocaleString("pt-BR");
   }
 
+  return (
+    <>
+      <div>Última atualização: {UpdatedAtText}</div>
+    </>
+  );
+}
+
+function DatabaseInfo() {
+  const { data, isLoading } = useSWR("/api/v1/status", fetchAPI);
+
+  let resolve = "Carregando...";
+
   if (!isLoading && data) {
-    Dependencies = JSON.stringify(data.dependencies.database, null, 2);
+    resolve = data.dependencies.database;
   }
 
   return (
     <>
-      <div>Última atualização: {UpdatedAtText}</div>
-      <h1>Banco de Dados</h1>
-      <pre>{Dependencies}</pre>
+      <pre>Conexões abertas: {resolve.opened_connections}</pre>
+      <pre>Conexões disponíveis: {resolve.max_connections}</pre>
+      <pre>Versão do PostgreSQL: {resolve.version}</pre>
     </>
   );
 }
