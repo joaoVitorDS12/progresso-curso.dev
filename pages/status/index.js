@@ -9,9 +9,7 @@ async function fetchAPI(key) {
 export default function StatusPage() {
   return (
     <>
-      <h1>Status</h1>
       <UpdatedAt />
-      <h1>Banco de Dados</h1>
       <DatabaseInfo />
     </>
   );
@@ -31,6 +29,7 @@ function UpdatedAt() {
 
   return (
     <>
+      <h1>Status</h1>
       <div>Última atualização: {UpdatedAtText}</div>
     </>
   );
@@ -39,17 +38,25 @@ function UpdatedAt() {
 function DatabaseInfo() {
   const { data, isLoading } = useSWR("/api/v1/status", fetchAPI);
 
-  let resolve = "Carregando...";
+  let databaseStatusInformation = "Carregando...";
 
   if (!isLoading && data) {
-    resolve = data.dependencies.database;
+    databaseStatusInformation = (
+      <>
+        <div>
+          Conexões abertas: {data.dependencies.database.opened_connections}
+        </div>
+        <div>
+          Conexões disponíveis: {data.dependencies.database.max_connections}
+        </div>
+        <div>Versão do PostgreSQL: {data.dependencies.database.version}</div>
+      </>
+    );
+    return (
+      <>
+        <h1>Database</h1>
+        <pre>{databaseStatusInformation}</pre>
+      </>
+    );
   }
-
-  return (
-    <>
-      <pre>Conexões abertas: {resolve.opened_connections}</pre>
-      <pre>Conexões disponíveis: {resolve.max_connections}</pre>
-      <pre>Versão do PostgreSQL: {resolve.version}</pre>
-    </>
-  );
 }
