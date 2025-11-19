@@ -52,11 +52,12 @@ function DatabaseInfo() {
         <div>Versão do PostgreSQL: {data.dependencies.database.version}</div>
       </>
     );
-    return (
-      <>
-        <h1>Database</h1>
-        <pre>{databaseStatusInformation}</pre>
-      </>
-    );
   }
+
+  return (
+    <>
+      <h1>Database</h1>
+      <div>{databaseStatusInformation}</div>
+    </>
+  );
 }
