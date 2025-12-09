@@ -1,7 +1,16 @@
 import bcryptjs from "bcryptjs";
+import { ValidationError } from "infra/errors";
 
 async function hash(password) {
   const rounds = getNumberOfRounds();
+
+  if (!password || typeof password !== "string" || password.trim() === "") {
+    throw new ValidationError({
+      message: "A senha informada é inválida ou não foi fornecida.",
+      action: "Informe uma senha válida para continuar.",
+    });
+  }
+
   const peppered = applyPepper(password);
   return await bcryptjs.hash(peppered, rounds);
 }
