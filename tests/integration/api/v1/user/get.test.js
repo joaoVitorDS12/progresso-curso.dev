@@ -26,6 +26,11 @@ describe("GET /api/v1/user", () => {
 
       expect(response.status).toBe(200);
 
+      const cacheControl = response.headers.get("Cache-Control");
+      expect(cacheControl).toBe(
+        "no-store, no-cache, max-age=0, must-revalidate",
+      );
+
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
@@ -67,37 +72,22 @@ describe("GET /api/v1/user", () => {
       });
     });
 
-    test("With almost ending session", async () => {
-      const now = Date.now();
-      const ONE_MINUTE = 60_000;
-
+    test("With halfway-expired session", async () => {
       jest.useFakeTimers({
-        now,
+        now: new Date(Date.now() - session.EXPIRATION_IN_MILLISECONDS / 2),
       });
 
       const createdUser = await orchestrator.createUser({
-        username: "UserWithAlmostEndingSession",
+        username: "UserWithHalfwayExpiredSession",
       });
 
       const sessionObject = await orchestrator.createSession(createdUser.id);
 
-      // Avança o tempo para 1 minuto antes da expiração
-      jest.setSystemTime(now + session.EXPIRATION_IN_MILLISECONDS - ONE_MINUTE);
-
-      // Prova que falta somente 1 minuto para expirar a sessão
-      const sessionBeforeRequest = await session.findOneValidByToken(
-        sessionObject.token,
-      );
-
-      const timeRemainingInMs =
-        sessionBeforeRequest.expires_at.getTime() - Date.now();
-
-      expect(timeRemainingInMs).toBeGreaterThan(59_000);
-      expect(timeRemainingInMs).toBeLessThanOrEqual(ONE_MINUTE);
+      jest.useRealTimers();
 
       const response = await fetch("http://localhost:3000/api/v1/user", {
         headers: {
-          Cookie: `session_id=${sessionObject.token}`,
+          cookie: `session_id=${sessionObject.token}`,
         },
       });
 
@@ -105,21 +95,43 @@ describe("GET /api/v1/user", () => {
 
       const responseBody = await response.json();
 
-      expect(responseBody.username).toBe("UserWithAlmostEndingSession");
+      expect(responseBody).toEqual({
+        id: createdUser.id,
+        username: "UserWithHalfwayExpiredSession",
+        email: createdUser.email,
+        password: createdUser.password,
+        created_at: createdUser.created_at.toISOString(),
+        updated_at: createdUser.updated_at.toISOString(),
+      });
 
+      expect(uuidVersion(responseBody.id)).toBe(4);
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      // Session renewal assertions
       const renewedSessionObject = await session.findOneValidByToken(
         sessionObject.token,
       );
 
-      expect(renewedSessionObject.expires_at > sessionObject.expires_at).toBe(
-        true,
-      );
+      expect(
+        renewedSessionObject.expires_at > sessionObject.expires_at,
+      ).toEqual(true);
+      expect(
+        renewedSessionObject.updated_at > sessionObject.updated_at,
+      ).toEqual(true);
 
-      expect(renewedSessionObject.updated_at > sessionObject.updated_at).toBe(
-        true,
-      );
+      // Set‑Cookie assertions
+      const parsedSetCookie = setCookieParser(response, {
+        map: true,
+      });
 
-      jest.useRealTimers();
+      expect(parsedSetCookie.session_id).toEqual({
+        name: "session_id",
+        value: sessionObject.token,
+        maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
+        path: "/",
+        httpOnly: true,
+      });
     });
 
     test("With nonexistent session", async () => {
