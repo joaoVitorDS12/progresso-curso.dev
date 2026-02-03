@@ -2,7 +2,6 @@ import orchestrator from "tests/orchestrator.js";
 import setCookieParser from "set-cookie-parser";
 import { version as uuidVersion } from "uuid";
 import session from "models/session.js";
-import { ForbiddenError } from "infra/errors.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
