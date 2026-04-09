@@ -25,6 +25,7 @@ function onErrorHandler(error, request, response) {
     error instanceof NotFoundError ||
     error instanceof ForbiddenError
   ) {
+    console.error(error);
     return response.status(error.statusCode).json(error);
   }
 
@@ -34,7 +35,6 @@ function onErrorHandler(error, request, response) {
   }
 
   const publicErrorObject = new InternalServerError({
-    statusCode: error.statusCode,
     cause: error,
   });
 
