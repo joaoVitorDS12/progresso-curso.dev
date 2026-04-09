@@ -34,6 +34,7 @@ function onErrorHandler(error, request, response) {
   }
 
   const publicErrorObject = new InternalServerError({
+    statusCode: error.statusCode,
     cause: error,
   });
 
