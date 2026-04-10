@@ -7,7 +7,7 @@ function getOrigin() {
     return `https://${process.env.VERCEL_URL}`;
   }
 
-  return "https://progresso-curso-dev.vercel.app/";
+  return "https://codebyjoaovitor.com.br/";
 }
 
 const webserver = {
