@@ -49,7 +49,7 @@ function DatabaseInfo() {
         <div>
           Conexões disponíveis: {data.dependencies.database.max_connections}
         </div>
-        <div>Versão do PostgreSQL: {data.dependencies.database.version}</div>
+        <div>Versão: {data.dependencies.database.version}</div>
       </>
     );
   }
