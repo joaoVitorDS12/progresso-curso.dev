@@ -15,7 +15,7 @@ describe("Use case: Registration Flow (All successful)", () => {
   let createSessionsResponseBody;
   let activationTokenId;
 
-  test("Create user account", async () => {
+  test(`Create user account`, async () => {
     const createUserResponse = await fetch(
       "http://localhost:3000/api/v1/users",
       {
@@ -44,7 +44,7 @@ describe("Use case: Registration Flow (All successful)", () => {
     });
   });
 
-  test("Receive activation email", async () => {
+  test(`Receive activation email`, async () => {
     const lastEmail = await orchestrator.getLastEmail();
 
     expect(lastEmail.sender).toBe("<contato@codebyjoaovitor.com.br>");
@@ -65,7 +65,7 @@ describe("Use case: Registration Flow (All successful)", () => {
     expect(activationTokenObject.used_at).toBe(null);
   });
 
-  test("Activate account", async () => {
+  test(`Activate account`, async () => {
     const activationResponse = await fetch(
       `http://localhost:3000/api/v1/activations/${activationTokenId}`,
       {
@@ -87,7 +87,7 @@ describe("Use case: Registration Flow (All successful)", () => {
     ]);
   });
 
-  test("Login", async () => {
+  test(`Login`, async () => {
     const createSessionResponse = await fetch(
       "http://localhost:3000/api/v1/sessions",
       {
@@ -109,7 +109,7 @@ describe("Use case: Registration Flow (All successful)", () => {
     expect(createSessionsResponseBody.user_id).toBe(createUserResponseBody.id);
   });
 
-  test("Get user information", async () => {
+  test(`Get user information`, async () => {
     const userResponse = await fetch("http://localhost:3000/api/v1/user", {
       headers: {
         cookie: `session_id=${createSessionsResponseBody.token}`,
