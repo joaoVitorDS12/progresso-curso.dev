@@ -46,6 +46,7 @@ async function main() {
     await run("next dev");
   } catch (err) {
     console.log("\n[DEV] > Processo finalizado.");
+    console.error(err)
   } finally {
     stopServices();
   }
