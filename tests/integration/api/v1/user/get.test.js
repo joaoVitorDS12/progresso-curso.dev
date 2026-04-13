@@ -2,6 +2,7 @@ import orchestrator from "tests/orchestrator.js";
 import setCookieParser from "set-cookie-parser";
 import { version as uuidVersion } from "uuid";
 import session from "models/session.js";
+import webserver from "infra/webserver.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -11,8 +12,8 @@ beforeAll(async () => {
 
 describe("GET /api/v1/user", () => {
   describe("Anonymous user", () => {
-    test("Retrieving the endpoint", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/user");
+    test(`Retrieving the endpoint`, async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/user`);
 
       expect(response.status).toBe(403);
 
@@ -28,16 +29,16 @@ describe("GET /api/v1/user", () => {
   });
 
   describe("Default user", () => {
-    test("With valid session", async () => {
+    test(`With valid session`, async () => {
       const createdUser = await orchestrator.createUser({
         username: "UserWithValidSession",
       });
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const sessionObject = await orchestrator.createSession(createdUser);
 
       const activatedUser = await orchestrator.activateUser(createdUser);
 
-      const response = await fetch("http://localhost:3000/api/v1/user", {
+      const response = await fetch(`${webserver.origin}/api/v1/user`, {
         headers: {
           Cookie: `session_id=${sessionObject.token}`,
         },
@@ -88,10 +89,11 @@ describe("GET /api/v1/user", () => {
         maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
         path: "/",
         httpOnly: true,
+        sameSite: "Lax",
       });
     });
 
-    test("With halfway-expired session", async () => {
+    test(`With halfway-expired session`, async () => {
       jest.useFakeTimers({
         now: new Date(Date.now() - session.EXPIRATION_IN_MILLISECONDS / 2),
       });
@@ -100,13 +102,13 @@ describe("GET /api/v1/user", () => {
         username: "UserWithHalfwayExpiredSession",
       });
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const sessionObject = await orchestrator.createSession(createdUser);
 
       const activatedUser = await orchestrator.activateUser(createdUser);
 
       jest.useRealTimers();
 
-      const response = await fetch("http://localhost:3000/api/v1/user", {
+      const response = await fetch(`${webserver.origin}/api/v1/user`, {
         headers: {
           cookie: `session_id=${sessionObject.token}`,
         },
@@ -152,14 +154,15 @@ describe("GET /api/v1/user", () => {
         maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
         path: "/",
         httpOnly: true,
+        sameSite: "Lax",
       });
     });
 
-    test("With nonexistent session", async () => {
+    test(`With nonexistent session`, async () => {
       const nonexistentToken =
         "9f3d8b2f1a4c4f87bc2e7a61c9d8f04e5e2b9d0a7c144b6fa2dd3c91f0b6a1de1a4c4f87bc2e7a61c9d8f02b9d0a7c11a4c4f87bc2e7a61c9d8f04";
 
-      const response = await fetch("http://localhost:3000/api/v1/user", {
+      const response = await fetch(`${webserver.origin}/api/v1/user`, {
         headers: {
           Cookie: `session_id=${nonexistentToken}`,
         },
@@ -190,7 +193,7 @@ describe("GET /api/v1/user", () => {
       });
     });
 
-    test("With expired session", async () => {
+    test(`With expired session`, async () => {
       jest.useFakeTimers({
         now: new Date(Date.now() - session.EXPIRATION_IN_MILLISECONDS),
       });
@@ -199,11 +202,11 @@ describe("GET /api/v1/user", () => {
         username: "UserWithExpiredSession",
       });
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const sessionObject = await orchestrator.createSession(createdUser);
 
       jest.useRealTimers();
 
-      const response = await fetch("http://localhost:3000/api/v1/user", {
+      const response = await fetch(`${webserver.origin}/api/v1/user`, {
         headers: {
           Cookie: `session_id=${sessionObject.token}`,
         },

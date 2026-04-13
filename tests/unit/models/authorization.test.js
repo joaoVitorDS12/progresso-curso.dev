@@ -3,13 +3,13 @@ import { InternalServerError } from "infra/errors.js";
 
 describe("models/authorizathion.js", () => {
   describe(".can()", () => {
-    test("without `user`", () => {
+    test(`without 'user'`, () => {
       expect(() => {
         authorization.can();
       }).toThrow(InternalServerError);
     });
 
-    test("without `user.features`", () => {
+    test(`without 'user.features'`, () => {
       const createdUser = {
         username: "UserWithoutFeatures",
       };
@@ -19,7 +19,7 @@ describe("models/authorizathion.js", () => {
       }).toThrow(InternalServerError);
     });
 
-    test("with unknown `feature`", () => {
+    test(`with unknown 'feature'`, () => {
       const createdUser = {
         features: [],
       };
@@ -29,7 +29,7 @@ describe("models/authorizathion.js", () => {
       }).toThrow(InternalServerError);
     });
 
-    test("with valide `user` and known `feature`", () => {
+    test(`with valide 'user' and known 'feature'`, () => {
       const createdUser = {
         features: ["create:user"],
       };
@@ -39,13 +39,13 @@ describe("models/authorizathion.js", () => {
   });
 
   describe(".filterOutput()", () => {
-    test("without `user`", () => {
+    test(`without 'user'`, () => {
       expect(() => {
         authorization.filterOutput();
       }).toThrow(InternalServerError);
     });
 
-    test("without `user.features`", () => {
+    test(`without 'user.features'`, () => {
       const createdUser = {
         username: "UserWithoutFeatures",
       };
@@ -55,7 +55,7 @@ describe("models/authorizathion.js", () => {
       }).toThrow(InternalServerError);
     });
 
-    test("with unknown `feature`", () => {
+    test(`with unknown 'feature'`, () => {
       const createdUser = {
         features: [],
       };
@@ -65,7 +65,7 @@ describe("models/authorizathion.js", () => {
       }).toThrow(InternalServerError);
     });
 
-    test("with valid `user`, known `feature` but no `resource`", () => {
+    test(`with valid 'user', known 'feature' but no 'resource'`, () => {
       const createdUser = {
         features: ["read:user"],
       };
@@ -75,7 +75,7 @@ describe("models/authorizathion.js", () => {
       }).toThrow(InternalServerError);
     });
 
-    test("with valide `user`, and known `feature` and `resource`", () => {
+    test(`with valide 'user', and known 'feature' and 'resource'`, () => {
       const createdUser = {
         features: ["read:user"],
       };
@@ -84,8 +84,8 @@ describe("models/authorizathion.js", () => {
         id: 1,
         username: "Resource",
         features: ["read:user"],
-        created_at: "2026-0101T00:00:00.000Z",
-        updated_at: "2026-0101T00:00:00.000Z",
+        created_at: "2026-01-01T00:00:00.000Z",
+        updated_at: "2026-01-01T00:00:00.000Z",
         email: "resource@resource.com",
         password: "resource",
       };
@@ -100,8 +100,8 @@ describe("models/authorizathion.js", () => {
         id: 1,
         username: "Resource",
         features: ["read:user"],
-        created_at: "2026-0101T00:00:00.000Z",
-        updated_at: "2026-0101T00:00:00.000Z",
+        created_at: "2026-01-01T00:00:00.000Z",
+        updated_at: "2026-01-01T00:00:00.000Z",
       });
     });
   });
